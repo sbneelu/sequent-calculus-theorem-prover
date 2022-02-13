@@ -1,6 +1,6 @@
 {-# LANGUAGE LambdaCase #-}
 
-module Prover (prove, proofToJson, atom, nt, (&&&), (|||), (-->)) where
+module Prover (atom, nt, proofToJson, prove, (&&&), (-->), (|||)) where
 
 import Data.List (find, intercalate, intersect)
 
