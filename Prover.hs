@@ -44,7 +44,7 @@ expandNotL (Sequent (assumps, goals)) =
 expandNotR (Sequent (assumps, goals)) =
   let notGoals = filter (\case Not _ -> True; _ -> False) goals
    in Sequent
-        ( combineLists assumps (map (\case Not a -> a; a -> a) notGoals), --  (+*+)
+        ( combineLists assumps (map (\case Not a -> a; a -> a) notGoals), --  (+*+) See comment in expandNotL
           listWithout goals notGoals
         )
 
@@ -53,7 +53,7 @@ expandAndL (Sequent (assumps, goals)) =
    in Sequent
         ( combineLists
             (listWithout assumps andAssumps)
-            (foldl combineLists [] (map (\case And (a, b) -> [a, b]; _ -> []) andAssumps)), --  (+*+)
+            (foldl combineLists [] (map (\case And (a, b) -> [a, b]; _ -> []) andAssumps)), --  (+*+) See comment in expandNotL
           goals
         )
 
@@ -93,7 +93,7 @@ expandOrR (Sequent (assumps, goals)) =
         ( assumps,
           combineLists
             (listWithout goals orGoals)
-            (foldl combineLists [] (map (\case Or (a, b) -> [a, b]; _ -> []) orGoals)) --  (+*+)
+            (foldl combineLists [] (map (\case Or (a, b) -> [a, b]; _ -> []) orGoals)) --  (+*+) See comment in expandNotL
         )
 
 expandImpliesL (Sequent (assumps, goals)) =
@@ -114,8 +114,8 @@ expandImpliesL (Sequent (assumps, goals)) =
 expandImpliesR (Sequent (assumps, goals)) =
   let impliesGoals = filter (\case Implies _ -> True; _ -> False) goals
    in Sequent
-        ( combineLists assumps (map (\case Implies (a, b) -> a; x -> x) impliesGoals), --  (+*+)
-          combineLists (listWithout goals impliesGoals) (map (\case Implies (a, b) -> b; x -> x) impliesGoals) --  (+*+)
+        ( combineLists assumps (map (\case Implies (a, b) -> a; x -> x) impliesGoals), --  (+*+) See comment in expandNotL
+          combineLists (listWithout goals impliesGoals) (map (\case Implies (a, b) -> b; x -> x) impliesGoals) --  (+*+) See comment in expandNotL
         )
 
 allAtoms :: [Proposition] -> Bool
