@@ -21,7 +21,7 @@ let rec remove_duplicates = function
 | [] -> []
 | x :: xs ->
     let new_xs = remove_duplicates xs in
-    if List.exists (fun y -> x = y) xs then new_xs else x :: new_xs;;
+    if List.exists (fun y -> x = y) new_xs then new_xs else x :: new_xs;;
 
 let combine_lists l1 l2 =
     let rec combine_lists_aux xs ys =
@@ -34,7 +34,10 @@ let expand_not_l (Sequent(assumps, goals)) =
     let not_assumps = List.filter (fun x -> match x with Not _ -> true | _ -> false) assumps in
     Sequent(
         list_without assumps not_assumps,
-        combine_lists goals (List.map (fun a -> match a with Not a -> a | a -> a) not_assumps) (* This is for the sake of complete pattern matching. But all not_assumps will be of the form Not _.*)
+        combine_lists goals (List.map (fun a -> match a with Not a -> a | a -> a) not_assumps)
+        (*  a -> a above is for the sake of complete pattern matching. But all not_assumps will
+         *  be of the form Not _.
+         *)
     );;
 
 let expand_not_r (Sequent(assumps, goals)) =
@@ -103,7 +106,7 @@ let expand_implies_l (Sequent(assumps, goals)) =
                 remove_duplicates (p :: goals)
             );
             Sequent(
-                remove_duplicates (combine_lists new_assumps [q]),
+                remove_duplicates (q :: new_assumps),
                 goals
             )
         ]
@@ -143,7 +146,7 @@ let prove_sequent (Sequent(assumps, goals)) =
         else if List.exists (fun x -> match x with Or _ -> true | _ -> false) goals then
             Rule(Or_r, sequent, [prove_aux (expand_or_r sequent)])
         else if List.exists (fun x -> match x with Implies _ -> true | _ -> false) assumps then
-            Rule(Or_l, sequent, List.map (fun x -> prove_aux x) (expand_implies_l sequent))
+            Rule(Implies_l, sequent, List.map (fun x -> prove_aux x) (expand_implies_l sequent))
         else if List.exists (fun x -> match x with Implies _ -> true | _ -> false) goals then
             Rule(Implies_r, sequent, [prove_aux (expand_implies_r sequent)])
         else
@@ -183,5 +186,3 @@ let rec proof_to_json = function
     let sequent_json = sequent_to_json sequent in
     let proof_json = "[" ^ ((List.map proof_to_json proof_list) |> String.concat ",") ^ "]" in
     "{\"type\": \"" ^ rule_string ^ "\", \"sequent\": " ^ sequent_json ^ ", \"proof\": " ^ proof_json ^ "}";;
-
-let prove_to_json proposition = proof_to_json (prove proposition);;
