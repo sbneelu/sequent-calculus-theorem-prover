@@ -1,10 +1,11 @@
 module Peirce where
 
-import Prover
+import Prover (atom, nt, proofToJson, prove, (&&&), (-->), (|||))
 
 main :: IO ()
 main =
-  let p = Atom "P"; q = Atom "Q"
-   in let prop = Implies (Implies (Implies (p, q), p), p)
+  let p = atom "P"
+      q = atom "Q"
+   in let prop = ((p --> q) --> p) --> p
        in let proof = prove prop
            in print (proofToJson proof)

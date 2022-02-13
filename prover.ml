@@ -8,12 +8,18 @@ type proposition =
 type sequent = Sequent of (proposition list * proposition list);;
 
 type rule =
-| Not_l | Not_r
-| And_l | And_r
-| Or_l | Or_r
-| Implies_l | Implies_r;;
+| NotL | NotR
+| AndL | AndR
+| OrL | OrR
+| ImpliesL | ImpliesR;;
 
 type proof = Basic of sequent | Invalid of sequent | Rule of (rule * sequent * proof list);;
+
+let atom p = Atom p;;
+let nt p = Not p;;
+let (&&&) p q = And (p, q);;
+let (|||) p q = Or (p, q);;
+let (-->) p q = Implies (p, q);;
 
 let list_without list without = List.filter (fun x -> List.for_all (fun y -> x <> y) without) list;;
 
@@ -134,21 +140,21 @@ let prove_sequent (Sequent(assumps, goals)) =
             else Invalid(sequent)
         )
         else if List.exists (fun x -> match x with Not _ -> true | _ -> false) assumps then
-            Rule(Not_l, sequent, [prove_aux (expand_not_l sequent)])
+            Rule(NotL, sequent, [prove_aux (expand_not_l sequent)])
         else if List.exists (fun x -> match x with Not _ -> true | _ -> false) goals then
-            Rule(Not_r, sequent, [prove_aux (expand_not_r sequent)])
+            Rule(NotR, sequent, [prove_aux (expand_not_r sequent)])
         else if List.exists (fun x -> match x with And _ -> true | _ -> false) assumps then
-            Rule(And_l, sequent, [prove_aux (expand_and_l sequent)])
+            Rule(AndL, sequent, [prove_aux (expand_and_l sequent)])
         else if List.exists (fun x -> match x with And _ -> true | _ -> false) goals then
-            Rule(And_r, sequent, List.map (fun x -> prove_aux x) (expand_and_r sequent))
+            Rule(AndR, sequent, List.map (fun x -> prove_aux x) (expand_and_r sequent))
         else if List.exists (fun x -> match x with Or _ -> true | _ -> false) assumps then
-            Rule(Or_l, sequent, List.map (fun x -> prove_aux x) (expand_or_l sequent))
+            Rule(OrL, sequent, List.map (fun x -> prove_aux x) (expand_or_l sequent))
         else if List.exists (fun x -> match x with Or _ -> true | _ -> false) goals then
-            Rule(Or_r, sequent, [prove_aux (expand_or_r sequent)])
+            Rule(OrR, sequent, [prove_aux (expand_or_r sequent)])
         else if List.exists (fun x -> match x with Implies _ -> true | _ -> false) assumps then
-            Rule(Implies_l, sequent, List.map (fun x -> prove_aux x) (expand_implies_l sequent))
+            Rule(ImpliesL, sequent, List.map (fun x -> prove_aux x) (expand_implies_l sequent))
         else if List.exists (fun x -> match x with Implies _ -> true | _ -> false) goals then
-            Rule(Implies_r, sequent, [prove_aux (expand_implies_r sequent)])
+            Rule(ImpliesR, sequent, [prove_aux (expand_implies_r sequent)])
         else
             Invalid(sequent) (* This shouldn't ever be reached *)
         in
@@ -164,14 +170,14 @@ let rec proposition_to_json = function
 | Implies (a, b) -> "{\"type\": \"implies\", \"propositions\": [" ^ (proposition_to_json a) ^ ", " ^ (proposition_to_json b) ^ "]}";;
 
 let rule_to_string = function
-| Not_l -> "Not_l"
-| Not_r -> "Not_r"
-| And_l -> "And_l"
-| And_r -> "And_r"
-| Or_l -> "Or_l"
-| Or_r -> "Or_r"
-| Implies_l -> "Implies_l"
-| Implies_r -> "Implies_r";;
+| NotL -> "NotL"
+| NotR -> "NotR"
+| AndL -> "AndL"
+| AndR -> "AndR"
+| OrL -> "OrL"
+| OrR -> "OrR"
+| ImpliesL -> "ImpliesL"
+| ImpliesR -> "ImpliesR";;
 
 let sequent_to_json (Sequent (assumps, goals)) =
     let assumps_json = "[" ^ ((List.map proposition_to_json assumps) |> String.concat ",") ^ "]" in

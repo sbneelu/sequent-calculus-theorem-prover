@@ -1,6 +1,6 @@
 {-# LANGUAGE LambdaCase #-}
 
-module Prover where
+module Prover (atom, nt, (&&&), (|||), (-->), prove, proofToJson) where
 
 import Data.List (find, intercalate, intersect)
 
@@ -21,6 +21,16 @@ data Proof
   | Invalid Sequent
   | Step (Rule, Sequent, [Proof])
   deriving (Show)
+
+atom = Atom
+
+nt = Not
+
+(&&&) p q = And (p, q)
+
+(|||) p q = Or (p, q)
+
+(-->) p q = Implies (p, q)
 
 listWithout list without = filter (`notElem` without) list
 
