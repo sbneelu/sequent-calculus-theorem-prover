@@ -13,7 +13,7 @@ type rule =
 | OrL | OrR
 | ImpliesL | ImpliesR;;
 
-type proof = Basic of sequent | Invalid of sequent | Rule of (rule * sequent * proof list);;
+type proof = Basic of sequent | Invalid of sequent | Step of (rule * sequent * proof list);;
 
 let atom p = Atom p;;
 let nt p = Not p;;
@@ -140,21 +140,21 @@ let prove_sequent (Sequent(assumps, goals)) =
             else Invalid(sequent)
         )
         else if List.exists (fun x -> match x with Not _ -> true | _ -> false) assumps then
-            Rule(NotL, sequent, [prove_aux (expand_not_l sequent)])
+            Step(NotL, sequent, [prove_aux (expand_not_l sequent)])
         else if List.exists (fun x -> match x with Not _ -> true | _ -> false) goals then
-            Rule(NotR, sequent, [prove_aux (expand_not_r sequent)])
+            Step(NotR, sequent, [prove_aux (expand_not_r sequent)])
         else if List.exists (fun x -> match x with And _ -> true | _ -> false) assumps then
-            Rule(AndL, sequent, [prove_aux (expand_and_l sequent)])
+            Step(AndL, sequent, [prove_aux (expand_and_l sequent)])
         else if List.exists (fun x -> match x with And _ -> true | _ -> false) goals then
-            Rule(AndR, sequent, List.map (fun x -> prove_aux x) (expand_and_r sequent))
+            Step(AndR, sequent, List.map (fun x -> prove_aux x) (expand_and_r sequent))
         else if List.exists (fun x -> match x with Or _ -> true | _ -> false) assumps then
-            Rule(OrL, sequent, List.map (fun x -> prove_aux x) (expand_or_l sequent))
+            Step(OrL, sequent, List.map (fun x -> prove_aux x) (expand_or_l sequent))
         else if List.exists (fun x -> match x with Or _ -> true | _ -> false) goals then
-            Rule(OrR, sequent, [prove_aux (expand_or_r sequent)])
+            Step(OrR, sequent, [prove_aux (expand_or_r sequent)])
         else if List.exists (fun x -> match x with Implies _ -> true | _ -> false) assumps then
-            Rule(ImpliesL, sequent, List.map (fun x -> prove_aux x) (expand_implies_l sequent))
+            Step(ImpliesL, sequent, List.map (fun x -> prove_aux x) (expand_implies_l sequent))
         else if List.exists (fun x -> match x with Implies _ -> true | _ -> false) goals then
-            Rule(ImpliesR, sequent, [prove_aux (expand_implies_r sequent)])
+            Step(ImpliesR, sequent, [prove_aux (expand_implies_r sequent)])
         else
             Invalid(sequent) (* This shouldn't ever be reached *)
         in
@@ -187,7 +187,7 @@ let sequent_to_json (Sequent (assumps, goals)) =
 let rec proof_to_json = function
 | Basic sequent -> "{\"type\": \"basic\", \"sequent\": " ^ sequent_to_json sequent ^ "}"
 | Invalid sequent -> "{\"type\": \"invalid\", \"sequent\": " ^ sequent_to_json sequent ^ "}"
-| Rule(rule, sequent, proof_list) ->
+| Step(rule, sequent, proof_list) ->
     let rule_string = rule_to_string rule in
     let sequent_json = sequent_to_json sequent in
     let proof_json = "[" ^ ((List.map proof_to_json proof_list) |> String.concat ",") ^ "]" in

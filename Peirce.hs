@@ -1,6 +1,6 @@
 module Peirce where
 
-import Prover (atom, nt, proofToJson, prove, (&&&), (-->), (|||))
+import Prover (proofToJson, prove, atom, nt, (&&&), (|||), (-->))
 
 main :: IO ()
 main =
