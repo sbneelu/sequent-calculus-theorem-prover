@@ -44,8 +44,7 @@ expandNotL (Sequent (assumps, goals)) =
 expandNotR (Sequent (assumps, goals)) =
   let notGoals = filter (\case Not _ -> True; _ -> False) goals
    in Sequent
-        ( combineLists assumps (map (\case Not a -> a; a -> a) notGoals),
-          --  (+*+)
+        ( combineLists assumps (map (\case Not a -> a; a -> a) notGoals), --  (+*+)
           listWithout goals notGoals
         )
 
@@ -54,8 +53,7 @@ expandAndL (Sequent (assumps, goals)) =
    in Sequent
         ( combineLists
             (listWithout assumps andAssumps)
-            (foldl combineLists [] (map (\case And (a, b) -> [a, b]; _ -> []) andAssumps)),  --  (+*+)
-            --  (+*+)
+            (foldl combineLists [] (map (\case And (a, b) -> [a, b]; _ -> []) andAssumps)), --  (+*+)
           goals
         )
 
