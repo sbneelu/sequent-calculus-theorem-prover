@@ -36,6 +36,8 @@ expandNotL (Sequent(assumps, goals)) =
         Sequent(
             listWithout assumps notAssumps,
             combineLists goals (map (\case {Not a -> a; a -> a}) notAssumps)
+        --  a -> a above is for the sake of complete pattern matching. But all notAssumps will
+        --  be of the form Not _.
         )
 
 expandNotR (Sequent(assumps, goals)) =
@@ -147,7 +149,7 @@ proveSequent (Sequent(assumps, goals)) =
             else if any (\case {Implies _ -> True; _ -> False}) goals then
                 Step(ImpliesR, sequent, [proveAux (expandImpliesR sequent)])
             else
-                Invalid sequent
+                Invalid sequent -- This shouldn't ever be reached
     in proveAux (Sequent(removeDuplicates assumps, removeDuplicates goals))
 
 prove proposition = proveSequent (Sequent([], [proposition]))
