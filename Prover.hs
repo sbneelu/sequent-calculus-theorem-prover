@@ -38,13 +38,14 @@ expandNotL (Sequent (assumps, goals)) =
         ( listWithout assumps notAssumps,
           combineLists goals (map (\case Not a -> a; a -> a) notAssumps)
           --  a -> a above is for the sake of complete pattern matching. But all notAssumps will
-          --  be of the form Not _.
+          --  be of the form Not _. The same goes for every (+*+) comment in this file.
         )
 
 expandNotR (Sequent (assumps, goals)) =
   let notGoals = filter (\case Not _ -> True; _ -> False) goals
    in Sequent
         ( combineLists assumps (map (\case Not a -> a; a -> a) notGoals),
+          --  (+*+)
           listWithout goals notGoals
         )
 
@@ -53,7 +54,8 @@ expandAndL (Sequent (assumps, goals)) =
    in Sequent
         ( combineLists
             (listWithout assumps andAssumps)
-            (foldl combineLists [] (map (\case And (a, b) -> [a, b]; _ -> []) andAssumps)),
+            (foldl combineLists [] (map (\case And (a, b) -> [a, b]; _ -> []) andAssumps)),  --  (+*+)
+            --  (+*+)
           goals
         )
 
@@ -93,7 +95,7 @@ expandOrR (Sequent (assumps, goals)) =
         ( assumps,
           combineLists
             (listWithout goals orGoals)
-            (foldl combineLists [] (map (\case Or (a, b) -> [a, b]; _ -> []) orGoals))
+            (foldl combineLists [] (map (\case Or (a, b) -> [a, b]; _ -> []) orGoals)) --  (+*+)
         )
 
 expandImpliesL (Sequent (assumps, goals)) =
@@ -114,8 +116,8 @@ expandImpliesL (Sequent (assumps, goals)) =
 expandImpliesR (Sequent (assumps, goals)) =
   let impliesGoals = filter (\case Implies _ -> True; _ -> False) goals
    in Sequent
-        ( combineLists assumps (map (\case Implies (a, b) -> a; x -> x) impliesGoals),
-          combineLists (listWithout goals impliesGoals) (map (\case Implies (a, b) -> b; x -> x) impliesGoals)
+        ( combineLists assumps (map (\case Implies (a, b) -> a; x -> x) impliesGoals), --  (+*+)
+          combineLists (listWithout goals impliesGoals) (map (\case Implies (a, b) -> b; x -> x) impliesGoals) --  (+*+)
         )
 
 allAtoms :: [Proposition] -> Bool
