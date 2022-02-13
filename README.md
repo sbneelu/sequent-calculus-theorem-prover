@@ -1,6 +1,6 @@
 # Propositional Logic Theorem Prover using Sequent Calculus
 
-A propositional logic theorem prover using [sequent calculus](https://en.wikipedia.org/wiki/Sequent_calculus) with Haskell and OCaml implementations.
+A propositional logic theorem prover using [sequent calculus](https://en.wikipedia.org/wiki/Sequent_calculus) with implementations in Haskell and OCaml.
 
 The provers are in `Prover.hs` and `prover.ml`, with Peirce's law [((P -> Q) -> P) -> P] as an example in `Peirce.hs` and `peirce.ml`.
 
