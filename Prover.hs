@@ -128,7 +128,6 @@ expandImpliesR (Sequent (assumps, goals)) =
           combineLists (listWithout goals impliesGoals) (map (\case Implies (a, b) -> b; x -> x) impliesGoals) --  (+*+) See comment in expandNotL
         )
 
-allAtoms :: [Proposition] -> Bool
 allAtoms = all (\case Atom _ -> True; _ -> False)
 
 haveIntersection xs ys = not (null (xs `intersect` ys))
